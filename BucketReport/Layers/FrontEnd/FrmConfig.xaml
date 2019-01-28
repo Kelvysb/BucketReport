@@ -1,0 +1,48 @@
+﻿<Window x:Class="BucketReport.Layers.FrontEnd.FrmConfig"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BucketReport.Layers.FrontEnd"
+        mc:Ignorable="d"
+             Title="Configuration" Height="250" Width="500" ResizeMode="NoResize"  Background="{StaticResource BackColor}">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Content="BitBucket API Base Uri:" Style="{StaticResource stlLabelBase}"  Grid.Column="0" Grid.Row="0" />
+        <TextBox Name="txtApiUri" Text="https://api.bitbucket.org/2.0" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="0" />
+
+        <Label Content="Authentication Uri:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="1" />
+        <TextBox Name="txtAuthUri" Text="https://bitbucket.org/site/oauth2/access_token" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="1" />
+
+        <Label Content="User Key:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="2" />
+        <TextBox Name="txtUserKey" Text="" Style="{StaticResource stlTextBoxBase}" Grid.Column="1" Margin="5" Grid.Row="2" />
+
+        <Label Content="User Secret:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="3" />
+        <PasswordBox Name="txtUserSecret" Password="" Style="{StaticResource stlPasswordBase}" Grid.Column="1" Margin="5" Grid.Row="3" />
+
+        <Label Content="Issues Repository:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="4" />
+        <TextBox Name="txtIssuesUri" Text="" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="4" />
+
+        <Label Content="Refresh Time (seconds):" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="5" />
+        <TextBox Name="txtRefreshTime" InputScope="Number" Text="10" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="5" />
+
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"  HorizontalAlignment="Center">
+            <Button Name="btnBaseFilter" Content="Base Filter" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="90" Height="20" Click="btnBaseFilter_Click"/>
+            <Button Name="btnSave" Content="Save" Style="{StaticResource ButtonStyle }" Width="60" Height="20" Click="btnSave_Click" />
+        </StackPanel>
+
+    </Grid>
+</Window>

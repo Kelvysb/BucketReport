@@ -5,8 +5,62 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BucketReport"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Bucket Report" Height="450" Width="800" Background="{StaticResource BackColor}" Loaded="Window_Loaded">
+    <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="2" Grid.Row="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+
+            <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="0,0,0,2" Grid.Row="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="Filters:" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Grid.Column="0"/>
+                    <ComboBox Name="cmbFilters" Style="{StaticResource stlComboBoxBase}" Margin="2" Grid.Column="1"/>
+                    
+                    <StackPanel Orientation="Horizontal" Grid.Column="2"  HorizontalAlignment="Left" Margin="10,0,0,0">
+                        <Button Name="btnFilter" Content="Filter" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="60" Height="20" Click="btnFilter_Click"/>
+                        <Button Name="btnAddFilter" Content="+" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="20" Height="20" Click="btnAddFilter_Click" />
+                        <Button Name="btnRemove" Content="-" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="20" Height="20" Click="btnRemove_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+                <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="0,0,2,0" Grid.Column="0">
+                    <ScrollViewer>
+                        <StackPanel Name="stkIssues">
+                            
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <ScrollViewer Grid.Column="1">
+                    <StackPanel Name="stkLog">
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="0,2,0,0" Grid.Row="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="btnConfig" Content="Configuration" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnConfig_Click"/>
+                    <Button Name="btnRefresh" Content="Refresh" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="70" Height="20" Click="btnRefresh_Click" />
+                    <Button Name="btnClear" Content="Clear Log" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="70" Height="20" Click="btnClear_Click" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
 </Window>
