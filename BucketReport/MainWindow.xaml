@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BucketReport"
         mc:Ignorable="d"
-        Title="Bucket Report" Height="450" Width="800" Background="{StaticResource BackColor}" Loaded="Window_Loaded">
+        Title="Bucket Report" Height="600" Width="900" Background="{StaticResource BackColor}" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
     <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="2" Grid.Row="0">
         <Grid>
             <Grid.RowDefinitions>
@@ -27,6 +27,8 @@
                     
                     <StackPanel Orientation="Horizontal" Grid.Column="2"  HorizontalAlignment="Left" Margin="10,0,0,0">
                         <Button Name="btnFilter" Content="Filter" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="60" Height="20" Click="btnFilter_Click"/>
+                        <Button Name="btnClearFilter" Content="Clear" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="60" Height="20" Click="btnClearFilter_Click"/>
+                        <Button Name="btnEditFilter" Content="Edit" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="60" Height="20" Click="btnEditFilter_Click"/>
                         <Button Name="btnAddFilter" Content="+" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="20" Height="20" Click="btnAddFilter_Click" />
                         <Button Name="btnRemove" Content="-" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="20" Height="20" Click="btnRemove_Click" />
                     </StackPanel>
@@ -59,6 +61,7 @@
                     <Button Name="btnConfig" Content="Configuration" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnConfig_Click"/>
                     <Button Name="btnRefresh" Content="Refresh" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="70" Height="20" Click="btnRefresh_Click" />
                     <Button Name="btnClear" Content="Clear Log" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="70" Height="20" Click="btnClear_Click" />
+                    <Button Name="btnSynthetize" Content="Report" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="70" Height="20" Click="btnSynthetize_Click" />
                 </StackPanel>
             </Border>
         </Grid>

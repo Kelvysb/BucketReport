@@ -123,33 +123,33 @@ namespace BucketReport.Basic
                 fields.ForEach(field =>
                 {
 
-                    if (!field.Equals(fields.First()))
-                    {
-                        result += " " + field.LogicOperator;
-                    }
+                if (!field.Equals(fields.First()))
+                {
+                    result += " " + field.LogicOperator;
+                }
 
-                    if(field.SubFields.Count == 0)
+                if (field.SubFields.Count == 0)
+                {
+                    if (field.FieldName.Equals("id") || field.FieldName.Equals("created_on") || field.FieldName.Equals("updated_on"))
                     {
-                        if(field.FieldName.Equals("id") || field.FieldName.Equals("created_on") || field.FieldName.Equals("updated_on"))
-                        {
-                            result = " " + field.FieldName + " " + field.Operator + " " + field.Value;
-                        }
-                        else if(field.FieldName.Equals("assignee") || field.FieldName.Equals("reporter"))
-                        {
-                            result = HttpUtility.ParseQueryString(" " + field.FieldName + ".display_name " + field.Operator + " \"" + field.Value + "\"").ToString();
+                        result += " " + field.FieldName + " " + field.Operator + " " + field.Value;
+                    }
+                    else if (field.FieldName.Equals("assignee") || field.FieldName.Equals("reporter"))
+                    {
+                        result += " " + field.FieldName + ".display_name " + field.Operator + " \"" + field.Value + "\"";
                         }
                         else if (field.FieldName.Equals("milestone") || field.FieldName.Equals("version") || field.FieldName.Equals("component"))
                         {
-                            result = HttpUtility.ParseQueryString(" " + field.FieldName + ".name " + field.Operator + " \"" + field.Value + "\"").ToString();
+                            result += " " + field.FieldName + ".name " + field.Operator + " \"" + field.Value + "\"";
                         }
                         else
                         {
-                            result = HttpUtility.ParseQueryString(" " + field.FieldName + " " + field.Operator + " \"" + field.Value + "\"").ToString();
+                            result += " " + field.FieldName + " " + field.Operator + " \"" + field.Value + "\"";
                         }
                     }
                     else
                     {
-                        result = " (" + mountQuery(field.SubFields) + ")";
+                        result += " (" + mountQuery(field.SubFields) + ")";
                     }
 
                 });
@@ -184,23 +184,30 @@ namespace BucketReport.Basic
                     {
                         if (!field.Operator.Trim().ToUpper().Contains("~"))
                         {
-                            result = " " + field.FieldName + " " + field.Operator + " " + field.Value;
+                            if (!field.FieldName.Equals("id"))
+                            {
+                                result += " " + field.FieldName + " " + field.Operator + " \"" + field.Value + "\""; 
+                            }
+                            else
+                            {
+                                result += " " + field.FieldName + " " + field.Operator + " " + field.Value;
+                            }
                         }
                         else
                         {
                             if (!field.Operator.Trim().ToUpper().Contains("!"))
                             {
-                                result = " " + field.FieldName + " like (%" + field.Value + "%)";
+                                result += " " + field.FieldName + " like (\"%" + field.Value + "%\")";
                             }
                             else
                             {
-                                result = " " + field.FieldName + " not like (%" + field.Value + "%)";
-                            }                                
+                                result += " " + field.FieldName + " not like (\"%" + field.Value + "%\")";
+                            }
                         }                        
                     }
                     else
                     {
-                        result = " (" + mountQuery(field.SubFields) + ")";
+                        result += " (" + mountQuery(field.SubFields) + ")";
                     }
 
                 });

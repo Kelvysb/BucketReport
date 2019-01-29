@@ -115,6 +115,42 @@ namespace BucketReport
                 BMessage.Instance.fnErrorMessage(ex);
             }
         }
+
+        private void btnEditFilter_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                editFilter();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }
+
+        private void btnClearFilter_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                clearFilter();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }
+
+        private void btnSynthetize_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Synthetize();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }        
         #endregion
 
         #region Constructors
@@ -204,6 +240,18 @@ namespace BucketReport
             }
         }
 
+        private void Synthetize()
+        {
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error opening Synthetize", ex);
+            }
+        }
+
         private void addLog()
         {
             try
@@ -234,7 +282,16 @@ namespace BucketReport
         {
             try
             {
-
+                if (cmbFilters.SelectedIndex != -1)
+                {
+                    BucketReportBE.Instance.filterIssues(BucketReportBE.Instance.Filters[cmbFilters.SelectedIndex]);
+                    loadIssues();
+                }
+                else
+                {
+                    BucketReportBE.Instance.filterIssues();
+                    loadIssues();
+                }
             }
             catch (Exception ex)
             {
@@ -242,23 +299,68 @@ namespace BucketReport
             }
         }
 
-        private void addFilter()
+        private void clearFilter()
         {
             try
             {
+                cmbFilters.SelectedIndex = -1;
+                filter();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error on clear", ex);
+            }
+        }
 
+        private void editFilter()
+        {
+            FrmFilter filter;
+            try
+            {
+                if(cmbFilters.SelectedIndex != -1)
+                {
+                    filter = new FrmFilter(BucketReportBE.Instance.Filters[cmbFilters.SelectedIndex], false);
+                    filter.ShowDialog();
+                    filter = null;
+                }              
             }
             catch (Exception ex)
             {
                 throw new Exception("Error adding filter", ex);
             }
+        
+        }
+
+        private void addFilter()
+        {
+            FrmFilter filter;
+            try
+            {
+                filter = new FrmFilter(new Filter(), false);
+                if (filter.ShowDialog() == true)
+                {
+                    cmbFilters.Items.Add(BucketReportBE.Instance.Filters.Last().Description);
+                    cmbFilters.SelectedIndex = BucketReportBE.Instance.Filters.Count - 1;
+                }
+                filter = null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error adding filter", ex);
+            }
+                     
         }
 
         private void removeFilter()
         {
             try
             {
-
+                if (cmbFilters.SelectedIndex != -1)
+                {
+                    BucketReportBE.Instance.Filters.RemoveAt(cmbFilters.SelectedIndex);
+                    BucketReportBE.Instance.saveFilters();
+                    reloadFilters();
+                }
             }
             catch (Exception ex)
             {
@@ -291,12 +393,13 @@ namespace BucketReport
             }
         }
 
+
+
         #endregion
 
         #region Properties
 
         #endregion
-
         
     }
 }

@@ -448,7 +448,7 @@ namespace BucketReport.Layers.Repository
 
                 command = "INSERT OR REPLACE INTO issuesHistory(\n";
                 command += "id,\n";
-                command += "sequenceL,\n";
+                command += "sequence,\n";
                 command += "number,\n";
                 command += "title,\n";
                 command += "assignee,\n";
@@ -459,7 +459,7 @@ namespace BucketReport.Layers.Repository
                 command += "milestone,\n";
                 command += "version,\n";
                 command += "reporter,\n";
-                command += "created_onL,\n";
+                command += "created_on,\n";
                 command += "updated_on,\n";
                 command += "eventDate)\n";
                 command += "values (\n";
@@ -628,7 +628,10 @@ namespace BucketReport.Layers.Repository
             try
             {
 
-                filter.Id = getFiltersNextId();
+                if(filter.Id == 0)
+                {
+                    filter.Id = getFiltersNextId();
+                }
                 raw = new RawFilter(filter);
 
                 command = "INSERT OR REPLACE INTO filters(\n";

@@ -107,7 +107,7 @@ namespace BucketReport.Layers.BackEnd
             }
         }
 
-        public List<Issue> getIssues()
+        private List<Issue> getIssues()
         {
             try
             {
@@ -119,11 +119,35 @@ namespace BucketReport.Layers.BackEnd
             }
         }
 
-        public List<Issue> getIssues(Filter filter)
+        private List<Issue> getIssues(Filter filter)
         {
             try
             {
                 return repository.getIssues(filter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public void filterIssues(Filter filter)
+        {
+            try
+            {
+                LoadedIssues = getIssues(filter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public void filterIssues()
+        {
+            try
+            {
+                LoadedIssues = getIssues();
             }
             catch (Exception)
             {
@@ -287,7 +311,7 @@ namespace BucketReport.Layers.BackEnd
                 Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
                 saveConfig();
 
-                LoadedIssues = issues;
+                LoadedIssues = getIssues();
 
                 return result;
 
