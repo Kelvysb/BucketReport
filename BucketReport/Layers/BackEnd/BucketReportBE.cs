@@ -23,6 +23,7 @@ namespace BucketReport.Layers.BackEnd
         private Token token;
         private DateTime tokenValid;
         private BucketReportRep repository;
+        private string workDirectory;
         #endregion
 
         #region Events
@@ -39,11 +40,17 @@ namespace BucketReport.Layers.BackEnd
             try
             {
 
+                workDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\BucketReport\\";
+                if (!Directory.Exists(workDirectory))
+                {
+                    Directory.CreateDirectory(workDirectory);
+                }
+
                 LoadedIssues = new List<Issue>();
 
-                if (File.Exists(CONS_CONFIG_FILE))
+                if (File.Exists(workDirectory + CONS_CONFIG_FILE))
                 {
-                    file = new StreamReader(CONS_CONFIG_FILE);
+                    file = new StreamReader(workDirectory + CONS_CONFIG_FILE);
                     configFile = file.ReadToEnd();
                     file.Close();
                     file.Dispose();
@@ -63,7 +70,7 @@ namespace BucketReport.Layers.BackEnd
                     saveConfig();
                 }
 
-                repository = new BucketReportRep(CONS_DB_FILE);
+                repository = new BucketReportRep(workDirectory + CONS_DB_FILE);
 
                 loadFilters();
 
@@ -94,7 +101,7 @@ namespace BucketReport.Layers.BackEnd
             string configFile;
             try
             {
-                file = new StreamWriter(CONS_CONFIG_FILE, false);
+                file = new StreamWriter(workDirectory + CONS_CONFIG_FILE, false);
                 configFile = JsonConvert.SerializeObject(Configuration);
                 file.Write(configFile);
                 file.Close();
@@ -369,6 +376,7 @@ namespace BucketReport.Layers.BackEnd
         public List<Issue> LoadedIssues { get; set; }
         public List<Filter> Filters { get; set; }
         public Filter BaseFilter { get; set; }
+        public string WorkDirectory { get => workDirectory; }
         #endregion
     }
 }

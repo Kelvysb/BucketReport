@@ -195,7 +195,7 @@ namespace BucketReport
                                         (Brush)FindResource("FontColor"),
                                         (Brush)FindResource("FontColor"),
                                         (FontFamily)FindResource("Font"),
-                                        BucketReportBE.LogsFolder);
+                                        BucketReportBE.Instance.WorkDirectory + BucketReportBE.LogsFolder);
 
                 if (BucketReportBE.Instance.Configuration.IssuesRepository.Equals("")
                     || BucketReportBE.Instance.Configuration.BaseApiUri.Equals("")
@@ -378,6 +378,7 @@ namespace BucketReport
         {
             try
             {
+                grdLoading.Visibility = Visibility.Visible;
                 if (cmbFilters.SelectedIndex != -1)
                 {
                     BucketReportBE.Instance.filterIssues(BucketReportBE.Instance.Filters[cmbFilters.SelectedIndex]);
@@ -394,6 +395,10 @@ namespace BucketReport
             catch (Exception ex)
             {
                 throw new Exception("Error filtering", ex);
+            }
+            finally
+            {
+                grdLoading.Visibility = Visibility.Hidden;
             }
         }
 

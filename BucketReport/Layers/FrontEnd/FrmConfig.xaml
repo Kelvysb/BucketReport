@@ -40,8 +40,9 @@
         <Label Content="Refresh Time (seconds):" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="5" />
         <TextBox Name="txtRefreshTime" InputScope="Number" Text="10" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" />
 
-        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"  HorizontalAlignment="Center" Margin="127,0,15.639,0">
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="3"  HorizontalAlignment="Center">
             <Button Name="btnBaseFilter" Content="Base Filter" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="90" Height="20" Click="btnBaseFilter_Click"/>
+            <Button Name="btnResetDate" Content="Reset update time" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="120" Height="20" Click="btnResetDate_Click" />
             <Button Name="btnSave" Content="Save" Style="{StaticResource ButtonStyle }" Width="60" Height="20" Margin="0,0,10,0" Click="btnSave_Click" />
             <Button x:Name="btnHelp" Content="?" Style="{StaticResource ButtonStyle}" Width="60" Height="20" Margin="0,5.5" Click="btnHelp_Click" />
         </StackPanel>

@@ -41,6 +41,18 @@ namespace BucketReport.Layers.FrontEnd
             }
         }
 
+        private void btnResetDate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                clearDate();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }
+
         private void btnHelp_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -110,6 +122,19 @@ namespace BucketReport.Layers.FrontEnd
             }
         }
 
+        private void clearDate()
+        {
+            try
+            {
+                BucketReportBE.Instance.Configuration.LastUpdate = DateTime.Parse("1900-01-01T00:00:00");
+                BucketReportBE.Instance.saveConfig();
+                BMessage.Instance.fnMessage("Update date reseted.", "Bucket Report", MessageBoxButton.OK);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error reset date", ex);
+            }
+        }
         private void baseFilter()
         {
             FrmFilter filter;
