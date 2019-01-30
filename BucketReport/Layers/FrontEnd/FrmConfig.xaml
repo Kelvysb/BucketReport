@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BucketReport.Layers.FrontEnd"
         mc:Ignorable="d"
-             Title="Configuration" Height="250" Width="500" ResizeMode="NoResize"  Background="{StaticResource BackColor}"  WindowStartupLocation="CenterScreen">
+             Title="Configuration" Height="250" Width="500" ResizeMode="NoResize"  Background="{StaticResource BackColor}"  WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Icon="/BucketReport;component/Resources/icon.ico" Topmost="True">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -17,31 +17,33 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="194*"/>
+            <ColumnDefinition Width="179*"/>
+            <ColumnDefinition Width="111*"/>
         </Grid.ColumnDefinitions>
 
         <Label Content="BitBucket API Base Uri:" Style="{StaticResource stlLabelBase}"  Grid.Column="0" Grid.Row="0" />
-        <TextBox Name="txtApiUri" Text="https://api.bitbucket.org/2.0" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="0" />
+        <TextBox Name="txtApiUri" Text="https://api.bitbucket.org/2.0" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
 
         <Label Content="Authentication Uri:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="1" />
-        <TextBox Name="txtAuthUri" Text="https://bitbucket.org/site/oauth2/access_token" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="1" />
+        <TextBox Name="txtAuthUri" Text="https://bitbucket.org/site/oauth2/access_token" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" />
 
         <Label Content="User Key:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="2" />
-        <TextBox Name="txtUserKey" Text="" Style="{StaticResource stlTextBoxBase}" Grid.Column="1" Margin="5" Grid.Row="2" />
+        <TextBox Name="txtUserKey" Text="" Style="{StaticResource stlTextBoxBase}" Grid.Column="1" Margin="5" Grid.Row="2" Grid.ColumnSpan="2" />
 
         <Label Content="User Secret:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="3" />
-        <PasswordBox Name="txtUserSecret" Password="" Style="{StaticResource stlPasswordBase}" Grid.Column="1" Margin="5" Grid.Row="3" />
+        <PasswordBox Name="txtUserSecret" Password="" Style="{StaticResource stlPasswordBase}" Grid.Column="1" Margin="5" Grid.Row="3" Grid.ColumnSpan="2" />
 
         <Label Content="Issues Repository:" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="4" />
-        <TextBox Name="txtIssuesUri" Text="" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="4" />
+        <TextBox Name="txtIssuesUri" Text="" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" />
 
         <Label Content="Refresh Time (seconds):" Style="{StaticResource stlLabelBase}" Grid.Column="0" Grid.Row="5" />
-        <TextBox Name="txtRefreshTime" InputScope="Number" Text="10" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="5" />
+        <TextBox Name="txtRefreshTime" InputScope="Number" Text="10" Style="{StaticResource stlTextBoxBase}" Margin="5" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" />
 
-        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"  HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"  HorizontalAlignment="Center" Margin="127,0,15.639,0">
             <Button Name="btnBaseFilter" Content="Base Filter" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="90" Height="20" Click="btnBaseFilter_Click"/>
-            <Button Name="btnSave" Content="Save" Style="{StaticResource ButtonStyle }" Width="60" Height="20" Click="btnSave_Click" />
+            <Button Name="btnSave" Content="Save" Style="{StaticResource ButtonStyle }" Width="60" Height="20" Margin="0,0,10,0" Click="btnSave_Click" />
+            <Button x:Name="btnHelp" Content="?" Style="{StaticResource ButtonStyle}" Width="60" Height="20" Margin="0,5.5" Click="btnHelp_Click" />
         </StackPanel>
 
     </Grid>

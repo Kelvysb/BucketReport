@@ -18,6 +18,8 @@ using BucketReport.Basic;
 using BControls;
 using BucketReport.Layers.BackEnd;
 using BucketReport.Layers.FrontEnd;
+using System.Threading;
+using System.ComponentModel;
 
 namespace BucketReport
 {
@@ -28,7 +30,10 @@ namespace BucketReport
     {
 
         #region Declarations
-
+        private Filter selectedFilter = null;
+        private Thread task;
+        private bool active = true;
+        List<UserIssue> issuesControls;
         #endregion
 
         #region Events
@@ -144,13 +149,36 @@ namespace BucketReport
         {
             try
             {
-                Synthetize();
+                report();
             }
             catch (Exception ex)
             {
                 BMessage.Instance.fnErrorMessage(ex);
             }
-        }        
+        }
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                quickSearch();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }
+
+        private void btnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                about();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }
         #endregion
 
         #region Constructors
@@ -195,8 +223,10 @@ namespace BucketReport
             try
             {
                 reloadFilters();
-                BucketReportBE.Instance.getUpdateIssues();
-                loadIssues();
+                filter();
+                refresh();
+                task = new Thread(() => taskExecution());
+                task.Start();
             }
             catch (Exception ex)
             {
@@ -213,38 +243,96 @@ namespace BucketReport
                 {
                     cmbFilters.Items.Add(filter.Description);
                 });
+                selectedFilter = null;
             }
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        private void quickSearch()
+        {
+
+            List<UserIssue> auxIssuesControls;
+
+            try
+            {
+
+                issuesControls.ForEach(issue => issue.Visibility = Visibility.Visible);
+
+                auxIssuesControls = issuesControls.FindAll(issues =>
+                {
+                    return (issues.Issue.id.ToString().Contains(txtSearch.Text)
+                            || issues.Issue.title.ToString().Trim().ToUpper().Contains(txtSearch.Text.Trim().ToUpper()));
+                    
+                });
+
+                if(auxIssuesControls.Count > 0)
+                {
+                    issuesControls.ForEach(issue => issue.Visibility = Visibility.Collapsed);
+                    auxIssuesControls.ForEach(issue => issue.Visibility = Visibility.Visible);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error searching", ex);
             }
         }
 
         private void loadIssues()
         {
-            UserIssue issueControl;
             try
             {
+                grdLoading.Visibility = Visibility.Visible;
                 stkIssues.Children.Clear();
+                issuesControls = new List<UserIssue>();
                 BucketReportBE.Instance.LoadedIssues.ForEach(issue =>
                 {
-                    issueControl = new UserIssue(issue);
-                    issueControl.Margin = new Thickness(2);
-                    stkIssues.Children.Add(issueControl);
+                    issuesControls.Add(new UserIssue(issue));
+                    issuesControls.Last().Margin = new Thickness(2);
+                    stkIssues.Children.Add(issuesControls.Last());
                 });
+
+                lblTotal.Content = BucketReportBE.Instance.LoadedIssues.Count().ToString();
 
             }
             catch (Exception)
             {
                 throw;
             }
+            finally
+            {
+                grdLoading.Visibility = Visibility.Hidden;
+            }
         }
 
-        private void Synthetize()
+        private void report()
         {
+            FrmReport report;
             try
             {
-                
+
+                report = new FrmReport(selectedFilter);
+                report.ShowDialog();
+                report = null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error opening report", ex);
+            }
+        }
+
+        private void about()
+        {
+            FrmAbout about;
+            try
+            {
+
+                about = new FrmAbout();
+                about.ShowDialog();
+                about = null;
             }
             catch (Exception ex)
             {
@@ -252,10 +340,18 @@ namespace BucketReport
             }
         }
 
-        private void addLog()
+        private void addLog(List<Tuple<Issue, string>> logs)
         {
+            usrLog logControl;
+
             try
             {
+                logs.ForEach(log =>
+                {
+                    logControl = new usrLog(log.Item1, log.Item2);
+                    logControl.Margin = new Thickness(2);
+                    stkLog.Children.Add(logControl);
+                });
 
             }
             catch (Exception)
@@ -285,11 +381,13 @@ namespace BucketReport
                 if (cmbFilters.SelectedIndex != -1)
                 {
                     BucketReportBE.Instance.filterIssues(BucketReportBE.Instance.Filters[cmbFilters.SelectedIndex]);
+                    selectedFilter = BucketReportBE.Instance.Filters[cmbFilters.SelectedIndex];
                     loadIssues();
                 }
                 else
                 {
                     BucketReportBE.Instance.filterIssues();
+                    selectedFilter = null;
                     loadIssues();
                 }
             }
@@ -304,6 +402,7 @@ namespace BucketReport
             try
             {
                 cmbFilters.SelectedIndex = -1;
+                selectedFilter = null;
                 filter();
             }
             catch (Exception ex)
@@ -370,10 +469,13 @@ namespace BucketReport
 
         private void refresh()
         {
+            Thread refreshTask;
+
             try
             {
-                BucketReportBE.Instance.getUpdateIssues();
-                loadIssues();
+                grdLoading.Visibility = Visibility.Visible;
+                refreshTask = new Thread(() => refreshTaskExecute());
+                refreshTask.Start();
             }
             catch (Exception ex)
             {
@@ -381,11 +483,38 @@ namespace BucketReport
             }
         }
 
+        private void refreshTaskExecute()
+        {
+            List<Tuple<Issue, string>> logs;
+
+            try
+            {
+
+                logs = BucketReportBE.Instance.getUpdateIssues();
+
+                Dispatcher.Invoke(() => {
+                    addLog(logs);
+                    loadIssues();
+                });
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error refreshing", ex);
+            }
+            finally
+            {
+                Dispatcher.Invoke(() => {
+                    grdLoading.Visibility = Visibility.Hidden;
+                });
+            }
+        }
+
         private void clearLog()
         {
             try
             {
-
+                stkLog.Children.Clear();
             }
             catch (Exception ex)
             {
@@ -393,6 +522,57 @@ namespace BucketReport
             }
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            try
+            {
+                base.OnClosing(e);
+                active = false;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        private void taskExecution()
+        {
+            int count = 0;
+            List<Tuple<Issue, string>> logs;
+
+            try
+            {
+                do
+                {
+                    count++;
+
+                    if (!(BucketReportBE.Instance.Configuration.IssuesRepository.Equals("")
+                        || BucketReportBE.Instance.Configuration.BaseApiUri.Equals("")
+                        || BucketReportBE.Instance.Configuration.UserKey.Equals("")
+                        || BucketReportBE.Instance.Configuration.UserSecret.Equals("")))
+                    {
+                        if (count >= BucketReportBE.Instance.Configuration.RefreshTime)
+                        {
+                            count = 0;
+
+                            logs = BucketReportBE.Instance.getUpdateIssues();
+
+                            Dispatcher.Invoke(() => {
+                                addLog(logs);
+                                loadIssues();
+                            });
+                        }
+                    }
+                    Thread.Sleep(1000);
+                } while (active);
+
+            }
+            catch (Exception)
+            {
+
+            }
+        }
 
 
         #endregion
@@ -400,6 +580,7 @@ namespace BucketReport
         #region Properties
 
         #endregion
+
         
     }
 }

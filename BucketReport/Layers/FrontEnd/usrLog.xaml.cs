@@ -17,13 +17,14 @@ using System.Windows.Shapes;
 namespace BucketReport.Layers.FrontEnd
 {
     /// <summary>
-    /// Interaction logic for UserIssue.xaml
+    /// Interaction logic for usrLog.xaml
     /// </summary>
-    public partial class UserIssue : UserControl
+    public partial class usrLog : UserControl
     {
-
         #region Declarations
-        bool loaded = false;
+        private Issue issue;
+        private string log;
+        private DateTime dateTime;
         #endregion
 
         #region Events
@@ -52,13 +53,15 @@ namespace BucketReport.Layers.FrontEnd
         }
         #endregion
 
-        #region Constructor
-        public UserIssue(Issue issue)
+        #region Constructors
+        public usrLog(Issue issue, string log)
         {
             try
             {
                 InitializeComponent();
-                Issue = issue;
+                dateTime = DateTime.Now;
+                this.issue = issue;
+                this.log = log;
             }
             catch (Exception)
             {
@@ -68,55 +71,19 @@ namespace BucketReport.Layers.FrontEnd
         #endregion
 
         #region Methods
-        private void loadObject()
-        {
+        private void loadObject(){
             try
             {
-                lblId.Content = Issue.id;
-                lblTitle.Content = Issue.title;
-
-                if (Issue.assignee != null)
+                txtLog.Text = log;
+                if (issue == null)
                 {
-                    lblAssignee.Content = Issue.assignee.display_name;
-                }
-                else
-                {
-                    lblAssignee.Content = "";
+                    btnOpen.IsEnabled = false;
                 }
 
-                if (Issue.component != null)
-                {
-                    lblComponent.Content = Issue.component.name;
-                }
-                else
-                {
-                    lblComponent.Content = "";
-                }
-                if (Issue.milestone != null)
-                {
-                    lblMilestone.Content = Issue.milestone.name;
-                }
-                else
-                {
-                    lblMilestone.Content = "";
-                }
-
-                if (Issue.version != null)
-                {
-                    lblVersion.Content = Issue.version.name;
-                }
-                else
-                {
-                    lblVersion.Content = "";
-                }
-
-                lblStatus.Content = Issue.state;
-                lblType.Content = Issue.type;
-                lblUpdate.Content = Issue.updated_on.ToString("yyyy-MM-dd HH:mm:ss") ;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw  new Exception("Error loading", ex);
             }
         }
 
@@ -124,7 +91,10 @@ namespace BucketReport.Layers.FrontEnd
         {
             try
             {
-                System.Diagnostics.Process.Start(Issue.links.html.href);
+                if(issue != null)
+                {
+                    System.Diagnostics.Process.Start(issue.links.html.href);
+                }
             }
             catch (Exception ex)
             {
@@ -134,10 +104,9 @@ namespace BucketReport.Layers.FrontEnd
         #endregion
 
         #region Properties
-        public Issue Issue { get; set; }
-    
+
         #endregion
 
-
+  
     }
 }

@@ -1,0 +1,34 @@
+﻿<Window x:Class="BucketReport.Layers.FrontEnd.FrmAbout"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BucketReport.Layers.FrontEnd"
+        mc:Ignorable="d"
+        Title="About - version: 0.1 beta" Height="260.911" Width="362.818" Background="{StaticResource BackColor}" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Icon="/BucketReport;component/Resources/icon.ico">
+    <Grid Name="grdPrincipal">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Border Style="{StaticResource ButtonRoundRectangleStyle}" Margin="10" Grid.Row="0">
+            <TextBlock Style="{StaticResource stlTextBlockBase}" Margin="5">
+                Bucket Report
+                <LineBreak/>
+                <LineBreak/>
+                Retrieve issues from BitBucket, maintain history,<LineBreak/> 
+                store filters, export resumes and csv files.<LineBreak/>
+                can be used with <Hyperlink Name="hypSpinerBase" NavigateUri="https://github.com/Kelvysb/SpinerBase" RequestNavigate="hyp_RequestNavigate">Spiner Base</Hyperlink> to extract BI and metrics.<LineBreak/>
+                <LineBreak/>
+                <LineBreak/>
+                Support this project on <Hyperlink Name="hypGithub" NavigateUri="https://github.com/Kelvysb/BucketReport" RequestNavigate="hyp_RequestNavigate">GitHub</Hyperlink> 
+                <LineBreak/>
+                <LineBreak/>
+                Open source by <Hyperlink Name="hypKelvysb" NavigateUri="http://Kelvysb.com" RequestNavigate="hyp_RequestNavigate">Kelvys B.</Hyperlink> 
+                <LineBreak/>
+            </TextBlock>
+        </Border>
+        <Button Name="btnBack" Content="Back" Style="{StaticResource ButtonStyle}" Grid.Row="1" Height="20" Width="60" HorizontalAlignment="Center" ToolTip="Back" Click="btnBack_Click"  />
+
+    </Grid>
+</Window>

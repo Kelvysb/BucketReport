@@ -1,4 +1,5 @@
-﻿using BucketReport.Basic;
+﻿using BControls;
+using BucketReport.Basic;
 using BucketReport.Layers.BackEnd;
 using System;
 using System.Collections.Generic;
@@ -179,38 +180,55 @@ namespace BucketReport.Layers.FrontEnd
             try
             {
 
-                Filter.Description = txtDescription.Text;
+                if (!txtDescription.Text.Equals(""))
+                {
+                    if (Filter.Fields.Count() >= 0)
+                    {
 
-                if (isBase)
-                {
-                    Filter.Base = 1;
-                    BucketReportBE.Instance.BaseFilter = Filter;                    
-                }
-                else
-                {
-                    Filter.Base = 0;
-                    if (Filter.Id == 0)
-                    {                        
-                        BucketReportBE.Instance.Filters.Add(Filter);
+                        Filter.Description = txtDescription.Text;
+
+                        if (isBase)
+                        {
+                            Filter.Base = 1;
+                            BucketReportBE.Instance.BaseFilter = Filter;
+                        }
+                        else
+                        {
+                            Filter.Base = 0;
+                            if (Filter.Id == 0)
+                            {
+                                BucketReportBE.Instance.Filters.Add(Filter);
+                            }
+                            else
+                            {
+                                auxFilter = BucketReportBE.Instance.Filters.Find(filter => filter.Id == Filter.Id);
+                                if (auxFilter != null)
+                                {
+                                    auxFilter.Base = 0;
+                                    auxFilter.Description = Filter.Description;
+                                    auxFilter.Fields = Filter.Fields;
+                                }
+                            }
+
+                        }
+
+                        BucketReportBE.Instance.saveFilters();
+
+                        saved = true;
+
+                        Close();
+
                     }
                     else
                     {
-                        auxFilter = BucketReportBE.Instance.Filters.Find(filter => filter.Id == Filter.Id);
-                        if(auxFilter != null)
-                        {
-                            auxFilter.Base = 0;
-                            auxFilter.Description = Filter.Description;
-                            auxFilter.Fields = Filter.Fields;                            
-                        }
+                        BMessage.Instance.fnMessage("Must have at least one field.", "Bucket Report", MessageBoxButton.OK);
                     }
-                    
                 }
-
-                BucketReportBE.Instance.saveFilters();
-
-                saved = true;
-
-                Close();
+                else
+                {
+                    BMessage.Instance.fnMessage("Must have an description.", "Bucket Report", MessageBoxButton.OK);
+                }
+               
             }
             catch (Exception)
             {

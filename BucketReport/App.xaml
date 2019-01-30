@@ -4,13 +4,13 @@
              xmlns:local="clr-namespace:BucketReport"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <SolidColorBrush x:Key="BaseColor" Color="Navy"/>
-        <SolidColorBrush x:Key="BaseColorSelected" Color="Blue"/>
+        <SolidColorBrush x:Key="BaseColor" Color="#ff0747a6"/>
+        <SolidColorBrush x:Key="BaseColorSelected" Color="#550747a6"/>
         <SolidColorBrush x:Key="BackColor" Color="White"/>
-        <SolidColorBrush x:Key="FontColor" Color="Navy"/>
+        <SolidColorBrush x:Key="FontColor" Color="#ff0747a6"/>
         <SolidColorBrush x:Key="FontColorDark" Color="White"/>
         <SolidColorBrush x:Key="DetailColor" Color="#29001cff"/>
-        <SolidColorBrush x:Key="LightColor" Color="#29001cff"/>
+        <SolidColorBrush x:Key="LightColor" Color="#440747a6"/>
 
         <FontFamily x:Key="Font">Arial</FontFamily>
 

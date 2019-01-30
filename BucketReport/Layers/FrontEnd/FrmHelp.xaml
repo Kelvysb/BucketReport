@@ -1,0 +1,17 @@
+﻿<Window x:Class="BucketReport.Layers.FrontEnd.FrmHelp"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BucketReport.Layers.FrontEnd"
+        mc:Ignorable="d"
+        Title="Help" Height="568.221" Width="785.699" Topmost="True" WindowStyle="ToolWindow" ResizeMode="NoResize" Icon="/BucketReport;component/Resources/icon.ico" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Image  Margin="0" Source="/BucketReport;component/Resources/help.bmp" />
+        <Button Name="btnBack" Content="Back" Style="{StaticResource ButtonStyle }" Width="60" Height="20" Margin="0,0,10,0" Grid.Row="1" Click="btnBack_Click" />
+    </Grid>
+</Window>

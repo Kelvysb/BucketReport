@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BucketReport.Layers.FrontEnd"
         mc:Ignorable="d"
-        Title="Report" Height="450" Width="800" Background="{StaticResource BackColor}" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Report" MinHeight="500" MinWidth="900" Height="500" Width="900" Background="{StaticResource BackColor}" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" WindowStyle="ToolWindow" Icon="/BucketReport;component/Resources/icon.ico" Topmost="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -13,30 +13,71 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="0,0,0,2" Grid.Row="0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label Name="lblFilter" Content="Filter" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Grid.Column="0" />
-                <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="10,2,20,3" HorizontalAlignment="Right">
-                    <Label Content="Views: " Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Grid.Column="0" />
-                    <ComboBox Name="cmbViews" Style="{StaticResource stlComboBoxBase}" Width="200"/>
-                </StackPanel>
-            </Grid>
+        <Border  BorderBrush="{StaticResource BaseColor}" BorderThickness="0,0,0,2" Grid.Row="0">
+            <Label Name="lblFilter" Content="Filter" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Grid.Column="0" />
         </Border>
 
-        <ScrollViewer Grid.Row="1">
-            <TextBlock Name="txtResult" Margin="2"/>
-        </ScrollViewer>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Style="{StaticResource ButtonRoundRectangleStyle}" Margin="5" Grid.Column="0" Grid.Row="0">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="20"/>
+                        <RowDefinition  Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="By State" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Padding="0" Grid.Row="0"/>
+                    <DataGrid Name="dtgState" Grid.Row=" 1" HeadersVisibility="None"/>
+                </Grid>    
+            </Border>
+
+            <Border Style="{StaticResource ButtonRoundRectangleStyle}" Margin="5" Grid.Column="1" Grid.Row="0">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="20"/>
+                        <RowDefinition  Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="By Component" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Padding="0" Grid.Row="0"/>
+                    <DataGrid Name="dtgComponent" Grid.Row=" 1"  HeadersVisibility="None"/>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource ButtonRoundRectangleStyle}" Margin="5" Grid.Column="0" Grid.Row="1">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="20"/>
+                        <RowDefinition  Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="By Kind" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Padding="0" Grid.Row="0"/>
+                    <DataGrid Name="dtgKind" Grid.Row=" 1"  HeadersVisibility="None"/>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource ButtonRoundRectangleStyle}" Margin="5" BorderThickness="1,1,0,0" Grid.Column="1" Grid.Row="1">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="20"/>
+                        <RowDefinition  Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="By Priority" Style="{StaticResource stlLabelBase}" VerticalAlignment="Center" Padding="0" Grid.Row="0"/>
+                    <DataGrid Name="dtgPriority" Grid.Row=" 1"  HeadersVisibility="None"/>
+                </Grid>
+            </Border>
+
+        </Grid>
 
         <Border BorderBrush="{StaticResource BaseColor}" BorderThickness="0,2,0,0" Grid.Row="2">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Name="btnCopy" Content="Copy" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnCopy_Click"/>
                 <Button Name="btnSaveCsv" Content="Save CSV" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnSaveCsv_Click"/>
                 <Button Name="btnSaveText" Content="Save Text" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnSaveText_Click"/>
-                <Button Name="btnExit" Content="Close" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnExit_Click"/>
+                <Button Name="btnExit" Content="Back" Style="{StaticResource ButtonStyle }" Margin="0,0,10,0" Width="100" Height="20" Click="btnExit_Click"/>
             </StackPanel>
         </Border>
 

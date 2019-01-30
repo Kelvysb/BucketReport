@@ -307,6 +307,106 @@ namespace BucketReport.Basic
                 throw;
             }
         }
+
+        public override string ToString()
+        {
+            string result = "";
+
+            try
+            {
+                result += id.ToString() + ";";
+                result += title + ";";
+                result += kind + ";";
+                result += type + ";";
+                result += priority + ";";
+                result += state + ";";
+
+                if (reporter != null)
+                {
+                    result += reporter.display_name + ";";
+                }
+                else
+                {
+                    result += "None" + ";";
+                }
+                if (assignee != null)
+                {
+                    result += assignee.display_name + ";";
+                }
+                else
+                {
+                    result += "None" + ";";
+                }
+                if (component != null)
+                {
+                    result += component.name + ";";
+                }
+                else
+                {
+                    result += "None" + ";";
+                }
+                if (milestone != null)
+                {
+                    result += milestone.name + ";";
+                }
+                else
+                {
+                    result += "None" + ";";
+                }
+
+                if (version != null)
+                {
+                    result += version.name + ";";
+                }
+                else
+                {
+                    result += "None" + ";";
+                }
+
+                result += created_on.ToString("yyyy-MM-dd HH:mm:ss") + ";";
+
+                if (updated_on != null)
+                {
+                    result += updated_on.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+                else
+                {
+                    result += "None";
+                }
+
+                return result;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                if (obj.GetType().Equals(this.GetType()))
+                {
+                    return this.ToString().Trim().ToUpper().Equals(obj.ToString().Trim().ToUpper());
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         #endregion
 
         #region Properties
@@ -441,7 +541,49 @@ namespace BucketReport.Basic
             {
                 throw;
             }
-        }    
+        }
+
+        public override string ToString()
+        {
+            return number + ";" 
+                + title + ";"
+                + kind + ";"
+                + (assignee.Equals("")?"None":assignee) + ";"
+                + type + ";"
+                + priority + ";"
+                + state + ";"
+                + (component.Equals("") ? "None" : assignee) + ";"
+                + (milestone.Equals("") ? "None" : assignee) + ";"
+                + (version.Equals("") ? "None" : assignee) + ";"
+                + (reporter.Equals("") ? "None" : assignee) + ";"
+                + created_on.ToString("yyyy-MM-dd HH:mm:ss") + ";"
+                + (updated_on != null?updated_on.ToString("yyyy-MM-dd HH:mm:ss"):"None");
+        }
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                if (obj.GetType().Equals(this.GetType()))
+                {
+                    return this.ToString().Trim().ToUpper().Equals(obj.ToString().Trim().ToUpper());
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+           
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         #endregion
 
         #region Properties

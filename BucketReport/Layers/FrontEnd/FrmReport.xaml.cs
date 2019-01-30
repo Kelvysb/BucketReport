@@ -1,19 +1,13 @@
 ﻿using BControls;
 using BucketReport.Basic;
+using BucketReport.Layers.BackEnd;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace BucketReport.Layers.FrontEnd
 {
@@ -23,10 +17,27 @@ namespace BucketReport.Layers.FrontEnd
     public partial class FrmReport : Window
     {
 
+        #region Types
+        internal class view
+        {
+            public view(string key, int value)
+            {
+                this.key = key;
+                this.value = value;
+            }
+
+            public string key { get; set; }
+            public int value { get; set; }
+        }
+        #endregion
+
         #region Declarations
         private Filter filter;
-        private List<DataSet> views;
-        private bool loaded = false;
+        private List<view> byState;
+        private List<view> byKind;
+        private List<view> byComponent;
+        private List<view> byPriority;
+        private List<RawIssue> issues;
         #endregion
 
         #region Events
@@ -98,33 +109,61 @@ namespace BucketReport.Layers.FrontEnd
             {
                 InitializeComponent();
                 this.filter = filter;
-                views = new List<DataSet>();
-                cmbViews.Items.Clear();
-                cmbViews.Items.Add("All");
-                cmbViews.Items.Add("State");
-                cmbViews.Items.Add("Component");
-                cmbViews.Items.Add("Milestone");
-                cmbViews.SelectedIndex = 0;
+                issues = BucketReportBE.Instance.LoadedIssues.Select(issue => new RawIssue(issue)).ToList();
             }
             catch (Exception)
             {
                 throw;
             }
         }
-
         #endregion
 
         #region Methods
         private void loadReport()
         {
+
+            
             try
             {
-                lblFilter.Content = filter.Description;
+                if(filter != null)
+                {
+                    lblFilter.Content = filter.Description;
+                }
+                else
+                {
+                    lblFilter.Content = "All";
+                }
 
+                
 
+                byState = new List<view>();
+                byState = (from RawIssue issue in issues
+                           group issue by issue.state into result
+                           select new view(result.Key.Equals("") ? "None" : result.Key, result.Count())).ToList();
+                dtgState.ItemsSource = null;
+                dtgState.ItemsSource = byState;
 
+                byComponent = new List<view>();
+                byComponent = (from RawIssue issue in issues
+                               group issue by issue.component into result
+                               select new view(result.Key.Equals("")?"None": result.Key, result.Count())).ToList();
+                dtgComponent.ItemsSource = null;
+                dtgComponent.ItemsSource = byComponent;
 
-                loaded = true;
+                byKind = new List<view>();
+                byKind = (from RawIssue issue in issues
+                          group issue by issue.kind into result
+                            select new view(result.Key.Equals("") ? "None" : result.Key, result.Count())).ToList();
+                dtgKind.ItemsSource = null;
+                dtgKind.ItemsSource = byKind;
+
+                byPriority = new List<view>();
+                byPriority = (from RawIssue issue in issues
+                              group issue by issue.priority into result
+                              select new view(result.Key.Equals("") ? "None" : result.Key, result.Count())).ToList();
+                dtgPriority.ItemsSource = null;
+                dtgPriority.ItemsSource = byPriority;
+                
             }
             catch (Exception ex)
             {
@@ -132,17 +171,39 @@ namespace BucketReport.Layers.FrontEnd
             }
         }
 
-        private void selectView()
+        private string getResumetext()
         {
+            string line = "";
             try
             {
-                if (loaded)
-                {
 
+                line += "Filter: " + lblFilter.Content + "\r\n\r\n";
 
+                line += "By State\r\n";
+                line += "-----------------------\r\n";
+                line += "State".PadRight(20, ' ') + "Count\r\n";
+                byState.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
+                line += "-----------------------\r\n\r\n";
 
+                line += "By Component\r\n";
+                line += "-----------------------\r\n";
+                line += "Component".PadRight(20, ' ') + "Count\r\n";
+                byComponent.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
+                line += "-----------------------\r\n\r\n";
 
-                }
+                line += "By Kind\r\n";
+                line += "-----------------------\r\n";
+                line += "Kind".PadRight(20, ' ') + "Count\r\n";
+                byKind.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
+                line += "-----------------------\r\n\r\n";
+
+                line += "By Priority\r\n";
+                line += "-----------------------\r\n";
+                line += "Priority".PadRight(20, ' ') + "Count\r\n";
+                byPriority.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
+                line += "-----------------------\r\n\r\n";
+
+                return line;
             }
             catch (Exception)
             {
@@ -154,7 +215,8 @@ namespace BucketReport.Layers.FrontEnd
         {
             try
             {
-
+              Clipboard.SetText(getResumetext(), TextDataFormat.Text);
+              BMessage.Instance.fnMessage("Copied", "Bucket Report", MessageBoxButton.OK);
             }
             catch (Exception ex)
             {
@@ -164,8 +226,27 @@ namespace BucketReport.Layers.FrontEnd
 
         private void saveTxt()
         {
+            StreamWriter file;
+            CommonSaveFileDialog saveDialog;
+            
             try
             {
+
+                saveDialog = new CommonSaveFileDialog();
+                saveDialog.Title = "Save resume";
+                saveDialog.Filters.Add(new CommonFileDialogFilter("Text file", "txt"));
+                saveDialog.DefaultExtension = "txt";
+                saveDialog.DefaultFileName = lblFilter.Content.ToString().Trim() + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_SS") + ".txt";
+                if (saveDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    file = new StreamWriter(saveDialog.FileName);
+                    file.Write(getResumetext());
+                    file.Close();
+                    file.Dispose();
+                    file = null;
+                    BMessage.Instance.fnMessage("Saved", "Bucket Report", MessageBoxButton.OK);
+                }
+
 
             }
             catch (Exception ex)
@@ -176,8 +257,31 @@ namespace BucketReport.Layers.FrontEnd
 
         private void SaveCSV()
         {
+
+            StreamWriter file;
+            CommonSaveFileDialog saveDialog;
+
             try
             {
+
+                saveDialog = new CommonSaveFileDialog();
+                saveDialog.Title = "Save CSV file";
+                saveDialog.Filters.Add(new CommonFileDialogFilter("CSV file", "csv"));
+                saveDialog.DefaultExtension = "csv";
+                saveDialog.DefaultFileName = lblFilter.Content.ToString().Trim() + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_SS") + ".csv";
+
+
+                if (saveDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    file = new StreamWriter(saveDialog.FileName);
+                    file.WriteLine("number;title;kind;assignee;type;priority;state;component;milestone;version;reporter;created_on;updated_on\n");
+                    issues.ForEach(issue => file.WriteLine(issue.ToString() + "\n"));
+                    file.Close();
+                    file.Dispose();
+                    file = null;
+                    BMessage.Instance.fnMessage("Saved", "Bucket Report", MessageBoxButton.OK);
+                }
+
 
             }
             catch (Exception ex)
@@ -190,7 +294,7 @@ namespace BucketReport.Layers.FrontEnd
         {
             try
             {
-
+                Close();
             }
             catch (Exception ex)
             {

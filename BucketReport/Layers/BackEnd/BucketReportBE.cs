@@ -58,7 +58,7 @@ namespace BucketReport.Layers.BackEnd
                     Configuration.IssuesRepository = "";
                     Configuration.UserKey = "";
                     Configuration.UserSecret = "";
-                    Configuration.RefreshTime = 10;
+                    Configuration.RefreshTime = 60;
                     Configuration.LastUpdate = DateTime.Parse("1900-01-01T00:00:00");
                     saveConfig();
                 }
@@ -198,14 +198,18 @@ namespace BucketReport.Layers.BackEnd
 
         public void getToken()
         {
+            IRestResponse response;
+            RestClient client;
+            RestRequest request;
+
             try
             {
-                var client = new RestClient(Configuration.AuthenticationUri);
-                var request = new RestRequest(Method.POST);
+                client = new RestClient(Configuration.AuthenticationUri);
+                request = new RestRequest(Method.POST);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("content-type", "application/x-www-form-urlencoded");
                 request.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&client_id=" + Configuration.UserKey + "&client_secret=" + Configuration.UserSecret, ParameterType.RequestBody);
-                IRestResponse response = client.Execute(request);
+                response = client.Execute(request);
                 token = JsonConvert.DeserializeObject<Token>(response.Content);
                 tokenValid = DateTime.Now.AddSeconds(token.expires_in);
             }
@@ -217,14 +221,19 @@ namespace BucketReport.Layers.BackEnd
 
         public void getRefreshToken()
         {
+
+            IRestResponse response;
+            RestClient client;
+            RestRequest request;
+
             try
             {
-                var client = new RestClient(Configuration.AuthenticationUri);
-                var request = new RestRequest(Method.POST);
+                client = new RestClient(Configuration.AuthenticationUri);
+                request = new RestRequest(Method.POST);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("content-type", "application/x-www-form-urlencoded");
                 request.AddParameter("application/x-www-form-urlencoded", "grant_type=refresh_token&client_id=" + Configuration.UserKey + "&refresh_token=" + token.refresh_token, ParameterType.RequestBody);
-                IRestResponse response = client.Execute(request);
+                response = client.Execute(request);
                 token = JsonConvert.DeserializeObject<Token>(response.Content);
                 tokenValid = DateTime.Now.AddSeconds(token.expires_in);
             }
@@ -234,13 +243,17 @@ namespace BucketReport.Layers.BackEnd
             }
         }
 
-        public List<string> getUpdateIssues()
+        public List<Tuple<Issue, string>> getUpdateIssues()
         {
 
-            List<string> result = new List<string>();
+            List<Tuple<Issue, string>> result = new List<Tuple<Issue, string>>();
             List<Issue> issues = new List<Issue>();
             Issue oldIssue;
             string query = "";
+            BucketResponseIssue bucketResponse;
+            IRestResponse response;
+            RestClient client;
+            RestRequest request;
 
             try
             {
@@ -272,54 +285,68 @@ namespace BucketReport.Layers.BackEnd
                     query = "updated_on > " + Configuration.LastUpdate.ToString("yyyy-MM-ddTHH:mm:ss");
                 }
 
-                var client = new RestClient(Configuration.BaseApiUri + Configuration.IssuesRepository + "?" + "access_token=" + token.access_token + "&q=" + HttpUtility.ParseQueryString(query));
-                var request = new RestRequest(Method.GET);
+                client = new RestClient(Configuration.BaseApiUri + Configuration.IssuesRepository + "?" + "access_token=" + token.access_token + "&q=" + HttpUtility.ParseQueryString(query));
+                request = new RestRequest(Method.GET);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("content-type", "application/x-www-form-urlencoded");
-                IRestResponse response = client.Execute(request);
-                BucketResponseIssue bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
+                response = client.Execute(request);
+                bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
 
-                issues.AddRange(bucketResponse.values);
-
-                if (bucketResponse.next != null)
+                if(bucketResponse != null)
                 {
-                    do
+
+                    issues.AddRange(bucketResponse.values);
+
+                    if (bucketResponse.next != null)
                     {
-                        client = new RestClient(bucketResponse.next);
-                        response = client.Execute(request);
-                        bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
-                        issues.AddRange(bucketResponse.values);
-                    } while (bucketResponse.next != null);
+                        do
+                        {
+                            client = new RestClient(bucketResponse.next);
+                            response = client.Execute(request);
+                            bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
+                            issues.AddRange(bucketResponse.values);
+                        } while (bucketResponse.next != null);
+                    }
+
+                    issues.ForEach(issue =>
+                    {
+
+                        oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
+               
+                        if(oldIssue == null)
+                        {
+                            result.Add(Tuple.Create(issue, "New issue: " + issue.id + " = " + issue.title));
+                        }
+                        else
+                        {
+                            if (!oldIssue.Equals(issue))
+                            {
+                                result.Add(Tuple.Create(issue, "Issue update: " + issue.id + " = " + issue.title + "\r\n" + issue.getChanges(oldIssue)));
+                            }
+                        }
+
+                        repository.saveIssue(issue);
+                    });
+
+
+                    Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
+                    saveConfig();
+
+                    LoadedIssues = getIssues();
+
+                }
+                else
+                {
+                    result.Add(Tuple.Create<Issue, string>(null, "Error connecting to the server."));
                 }
 
-                issues.ForEach(issue =>
-                {
-
-                    oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
-                    if(oldIssue == null)
-                    {
-                        result.Add("New issue: " + issue.id + " = " + issue.title);
-                    }
-                    else
-                    {
-                        result.Add("Issue update: " + issue.id + " = " + issue.title + "\n" + issue.getChanges(oldIssue));
-                    }
-                    repository.saveIssue(issue);
-                });
-
-
-                Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
-                saveConfig();
-
-                LoadedIssues = getIssues();
-
-                return result;
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                result.Add(Tuple.Create<Issue, string>(null, "Error retrieving issues from the server."));
             }
+
+            return result;
         }
 
 

@@ -1,17 +1,5 @@
-﻿using BucketReport.Basic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using BControls;
 using BucketReport.Layers.BackEnd;
 using System.ComponentModel;
@@ -43,7 +31,7 @@ namespace BucketReport.Layers.FrontEnd
 
         private void btnBaseFilter_Click(object sender, RoutedEventArgs e)
         {
-               try
+            try
             {
                 baseFilter();
             }
@@ -51,7 +39,19 @@ namespace BucketReport.Layers.FrontEnd
             {
                 BMessage.Instance.fnErrorMessage(ex);
             }
-        }       
+        }
+
+        private void btnHelp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                help();
+            }
+            catch (Exception ex)
+            {
+                BMessage.Instance.fnErrorMessage(ex);
+            }
+        }
         #endregion
 
         #region Constructors
@@ -97,6 +97,10 @@ namespace BucketReport.Layers.FrontEnd
                 BucketReportBE.Instance.saveConfig();
 
                 modified = true;
+
+                BMessage.Instance.fnMessage("Configuraton saved.\r\nBucket Report must be restarted to some configurations take effect.",
+                    "Bucket Report", MessageBoxButton.OK);
+
                 Close();
 
             }
@@ -124,6 +128,21 @@ namespace BucketReport.Layers.FrontEnd
             }
         }
 
+        private void help()
+        {
+            FrmHelp help;
+            try
+            {
+                help = new FrmHelp();
+                help.ShowDialog();
+                help = null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error opening help", ex);
+            }
+        }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
@@ -137,12 +156,13 @@ namespace BucketReport.Layers.FrontEnd
             }
         }
 
+
         #endregion
 
         #region Properties
 
         #endregion
 
-        
+  
     }
 }
