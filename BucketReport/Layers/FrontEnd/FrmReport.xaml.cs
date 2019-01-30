@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Threading;
 
 namespace BucketReport.Layers.FrontEnd
 {
@@ -125,6 +126,11 @@ namespace BucketReport.Layers.FrontEnd
             
             try
             {
+
+                Topmost = true;
+                Thread.Sleep(10);
+                Topmost = false;
+
                 if(filter != null)
                 {
                     lblFilter.Content = filter.Description;
@@ -236,10 +242,10 @@ namespace BucketReport.Layers.FrontEnd
                 saveDialog.Title = "Save resume";
                 saveDialog.Filters.Add(new CommonFileDialogFilter("Text file", "txt"));
                 saveDialog.DefaultExtension = "txt";
-                saveDialog.DefaultFileName = lblFilter.Content.ToString().Trim() + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_SS") + ".txt";
+                saveDialog.DefaultFileName = lblFilter.Content.ToString().Trim() + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".txt";
                 if (saveDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    file = new StreamWriter(saveDialog.FileName);
+                    file = new StreamWriter(saveDialog.FileName, false, System.Text.Encoding.UTF8);
                     file.Write(getResumetext());
                     file.Close();
                     file.Dispose();
@@ -247,11 +253,21 @@ namespace BucketReport.Layers.FrontEnd
                     BMessage.Instance.fnMessage("Saved", "Bucket Report", MessageBoxButton.OK);
                 }
 
+                Topmost = true;
+                Thread.Sleep(10);
+                Topmost = false;
+
 
             }
             catch (Exception ex)
             {
                 throw new Exception("Error saving report.", ex);
+            }
+            finally
+            {
+                Topmost = true;
+                Thread.Sleep(10);
+                Topmost = false;
             }
         }
 
@@ -268,25 +284,30 @@ namespace BucketReport.Layers.FrontEnd
                 saveDialog.Title = "Save CSV file";
                 saveDialog.Filters.Add(new CommonFileDialogFilter("CSV file", "csv"));
                 saveDialog.DefaultExtension = "csv";
-                saveDialog.DefaultFileName = lblFilter.Content.ToString().Trim() + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_SS") + ".csv";
+                saveDialog.DefaultFileName = lblFilter.Content.ToString().Trim() + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".csv";
 
 
                 if (saveDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    file = new StreamWriter(saveDialog.FileName);
-                    file.WriteLine("number;title;kind;assignee;type;priority;state;component;milestone;version;reporter;created_on;updated_on\n");
-                    issues.ForEach(issue => file.WriteLine(issue.ToString() + "\n"));
+                    file = new StreamWriter(saveDialog.FileName, false, System.Text.Encoding.UTF8);
+                    file.WriteLine("number;title;kind;assignee;type;priority;state;component;milestone;version;reporter;created_on;updated_on");
+                    issues.ForEach(issue => file.WriteLine(issue.ToString()));
                     file.Close();
                     file.Dispose();
                     file = null;
                     BMessage.Instance.fnMessage("Saved", "Bucket Report", MessageBoxButton.OK);
                 }
 
-
             }
             catch (Exception ex)
             {
                 throw new Exception("Error saving report.", ex);
+            }
+            finally
+            {
+                Topmost = true;
+                Thread.Sleep(10);
+                Topmost = false;
             }
         }
 
