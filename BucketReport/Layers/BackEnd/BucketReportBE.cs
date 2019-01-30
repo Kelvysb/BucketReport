@@ -60,7 +60,7 @@ namespace BucketReport.Layers.BackEnd
                 else
                 {
                     Configuration = new BRConfig();
-                    Configuration.BaseApiUri = "https://api.bitbucket.org/2.0";
+                    Configuration.BaseApiUri = "https://api.bitbucket.org/2.0/repositories/";
                     Configuration.AuthenticationUri = "https://bitbucket.org/site/oauth2/access_token";
                     Configuration.IssuesRepository = "";
                     Configuration.UserKey = "";
@@ -292,6 +292,11 @@ namespace BucketReport.Layers.BackEnd
                     query = "updated_on > " + Configuration.LastUpdate.ToString("yyyy-MM-ddTHH:mm:ss");
                 }
 
+                if (Configuration.IssuesRepository.StartsWith("/"))
+                {
+                    Configuration.IssuesRepository = Configuration.IssuesRepository.Substring(1);
+                }
+
                 client = new RestClient(Configuration.BaseApiUri + Configuration.IssuesRepository + "?" + "access_token=" + token.access_token + "&q=" + HttpUtility.ParseQueryString(query));
                 request = new RestRequest(Method.GET);
                 request.AddHeader("cache-control", "no-cache");
@@ -302,45 +307,50 @@ namespace BucketReport.Layers.BackEnd
                 if(bucketResponse != null)
                 {
 
-                    issues.AddRange(bucketResponse.values);
-
-                    if (bucketResponse.next != null)
-                    {
-                        do
-                        {
-                            client = new RestClient(bucketResponse.next);
-                            response = client.Execute(request);
-                            bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
-                            issues.AddRange(bucketResponse.values);
-                        } while (bucketResponse.next != null);
-                    }
-
-                    issues.ForEach(issue =>
+                    if(bucketResponse.values != null)
                     {
 
-                        oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
-               
-                        if(oldIssue == null)
+                   
+                        issues.AddRange(bucketResponse.values);
+
+                        if (bucketResponse.next != null)
                         {
-                            result.Add(Tuple.Create(issue, "New issue: " + issue.id + " = " + issue.title));
-                        }
-                        else
-                        {
-                            if (!oldIssue.Equals(issue))
+                            do
                             {
-                                result.Add(Tuple.Create(issue, "Issue update: " + issue.id + " = " + issue.title + "\r\n" + issue.getChanges(oldIssue)));
-                            }
+                                client = new RestClient(bucketResponse.next);
+                                response = client.Execute(request);
+                                bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
+                                issues.AddRange(bucketResponse.values);
+                            } while (bucketResponse.next != null);
                         }
 
-                        repository.saveIssue(issue);
-                    });
+                        issues.ForEach(issue =>
+                        {
+
+                            oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
+               
+                            if(oldIssue == null)
+                            {
+                                result.Add(Tuple.Create(issue, "New issue: " + issue.id + " = " + issue.title));
+                            }
+                            else
+                            {
+                                if (!oldIssue.Equals(issue))
+                                {
+                                    result.Add(Tuple.Create(issue, "Issue update: " + issue.id + " = " + issue.title + "\r\n" + issue.getChanges(oldIssue)));
+                                }
+                            }
+
+                            repository.saveIssue(issue);
+                        });
 
 
-                    Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
-                    saveConfig();
+                        Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
+                        saveConfig();
 
-                    LoadedIssues = getIssues();
+                        LoadedIssues = getIssues();
 
+                    }
                 }
                 else
                 {
