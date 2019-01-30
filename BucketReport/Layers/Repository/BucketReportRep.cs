@@ -286,7 +286,7 @@ namespace BucketReport.Layers.Repository
                 parameters.Add(new clsDataBaseParametes("@number", raw.number));
                 parameters.Add(new clsDataBaseParametes("@title", raw.title));
                 parameters.Add(new clsDataBaseParametes("@assignee", raw.assignee));
-                parameters.Add(new clsDataBaseParametes("@type", raw.type));
+                parameters.Add(new clsDataBaseParametes("@type", raw.kind));
                 parameters.Add(new clsDataBaseParametes("@priority", raw.priority));
                 parameters.Add(new clsDataBaseParametes("@state", raw.state));
                 parameters.Add(new clsDataBaseParametes("@component", raw.component));
@@ -346,9 +346,9 @@ namespace BucketReport.Layers.Repository
                                  sequence = int.Parse(row["sequence"].ToString()),
                                  number = row["number"].ToString(),
                                  title = row["title"].ToString(),
-                                 kind = row["kind"].ToString(),
-                                 assignee = row[""].ToString(),
-                                 type = row["assignee"].ToString(),
+                                 kind = row["type"].ToString(),
+                                 assignee = row["assignee"].ToString(),
+                                 type = row["type"].ToString(),
                                  priority = row["priority"].ToString(),
                                  state = row["state"].ToString(),
                                  component = row["component"].ToString(),
@@ -409,9 +409,9 @@ namespace BucketReport.Layers.Repository
                               sequence = int.Parse(row["sequence"].ToString()),
                               number = row["number"].ToString(),
                               title = row["title"].ToString(),
-                              kind = row["kind"].ToString(),
-                              assignee = row[""].ToString(),
-                              type = row["assignee"].ToString(),
+                              kind = row["type"].ToString(),
+                              assignee = row["assignee"].ToString(),
+                              type = "",
                               priority = row["priority"].ToString(),
                               state = row["state"].ToString(),
                               component = row["component"].ToString(),
@@ -485,7 +485,7 @@ namespace BucketReport.Layers.Repository
                 parameters.Add(new clsDataBaseParametes("@number", history.number));
                 parameters.Add(new clsDataBaseParametes("@title", history.title));
                 parameters.Add(new clsDataBaseParametes("@assignee", history.assignee));
-                parameters.Add(new clsDataBaseParametes("@type", history.type));
+                parameters.Add(new clsDataBaseParametes("@type", history.kind));
                 parameters.Add(new clsDataBaseParametes("@priority", history.priority));
                 parameters.Add(new clsDataBaseParametes("@state", history.state));
                 parameters.Add(new clsDataBaseParametes("@component", history.component));

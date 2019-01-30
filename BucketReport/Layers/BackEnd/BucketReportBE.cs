@@ -297,7 +297,7 @@ namespace BucketReport.Layers.BackEnd
                     Configuration.IssuesRepository = Configuration.IssuesRepository.Substring(1);
                 }
 
-                client = new RestClient(Configuration.BaseApiUri + Configuration.IssuesRepository + "?" + "access_token=" + token.access_token + "&q=" + HttpUtility.ParseQueryString(query));
+                client = new RestClient(Configuration.BaseApiUri + Configuration.IssuesRepository + "?" + "access_token=" + token.access_token + "&q=" + query);
                 request = new RestRequest(Method.GET);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("content-type", "application/x-www-form-urlencoded");
@@ -345,8 +345,11 @@ namespace BucketReport.Layers.BackEnd
                         });
 
 
-                        Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
-                        saveConfig();
+                        if(issues.Count > 0)
+                        {
+                            Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
+                            saveConfig();
+                        }
 
                         LoadedIssues = getIssues();
 

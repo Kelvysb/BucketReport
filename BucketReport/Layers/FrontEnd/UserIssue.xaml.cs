@@ -111,7 +111,7 @@ namespace BucketReport.Layers.FrontEnd
                 }
 
                 lblStatus.Content = Issue.state;
-                lblType.Content = Issue.type;
+                lblType.Content = Issue.kind;
                 lblUpdate.Content = Issue.updated_on.ToString("yyyy-MM-dd HH:mm:ss") ;
             }
             catch (Exception)
