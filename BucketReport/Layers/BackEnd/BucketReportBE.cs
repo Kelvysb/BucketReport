@@ -277,11 +277,6 @@ namespace BucketReport.Layers.BackEnd
                 {
                     getToken();
                 }
-                
-                if(tokenValid.CompareTo(DateTime.Now) <= 0)
-                {
-                    getRefreshToken();
-                }
 
                 if(BaseFilter != null)
                 {
@@ -302,62 +297,82 @@ namespace BucketReport.Layers.BackEnd
                 request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("content-type", "application/x-www-form-urlencoded");
                 response = client.Execute(request);
-                bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
 
-                if(bucketResponse != null)
+                if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
+                    getToken();
 
-                    if(bucketResponse.values != null)
+                    client = new RestClient(Configuration.BaseApiUri + Configuration.IssuesRepository + "?" + "access_token=" + token.access_token + "&q=" + query);
+                    request = new RestRequest(Method.GET);
+                    request.AddHeader("cache-control", "no-cache");
+                    request.AddHeader("content-type", "application/x-www-form-urlencoded");
+                    response = client.Execute(request);
+
+                }
+
+                if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
+
+                    if (bucketResponse != null)
                     {
 
-                   
-                        issues.AddRange(bucketResponse.values);
-
-                        if (bucketResponse.next != null)
-                        {
-                            do
-                            {
-                                client = new RestClient(bucketResponse.next);
-                                response = client.Execute(request);
-                                bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
-                                issues.AddRange(bucketResponse.values);
-                            } while (bucketResponse.next != null);
-                        }
-
-                        issues.ForEach(issue =>
+                        if (bucketResponse.values != null)
                         {
 
-                            oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
-               
-                            if(oldIssue == null)
+
+                            issues.AddRange(bucketResponse.values);
+
+                            if (bucketResponse.next != null)
                             {
-                                result.Add(Tuple.Create(issue, "New issue: " + issue.id + " = " + issue.title));
-                            }
-                            else
-                            {
-                                if (!oldIssue.Equals(issue))
+                                do
                                 {
-                                    result.Add(Tuple.Create(issue, "Issue update: " + issue.id + " = " + issue.title + "\r\n" + issue.getChanges(oldIssue)));
-                                }
+                                    client = new RestClient(bucketResponse.next);
+                                    response = client.Execute(request);
+                                    bucketResponse = JsonConvert.DeserializeObject<BucketResponseIssue>(response.Content);
+                                    issues.AddRange(bucketResponse.values);
+                                } while (bucketResponse.next != null);
                             }
 
-                            repository.saveIssue(issue);
-                        });
+                            issues.ForEach(issue =>
+                            {
+
+                                oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
+
+                                if (oldIssue == null)
+                                {
+                                    result.Add(Tuple.Create(issue, "New issue: " + issue.id + " = " + issue.title));
+                                }
+                                else
+                                {
+                                    if (!oldIssue.Equals(issue))
+                                    {
+                                        result.Add(Tuple.Create(issue, "Issue update: " + issue.id + " = " + issue.title + "\r\n" + issue.getChanges(oldIssue)));
+                                    }
+                                }
+
+                                repository.saveIssue(issue);
+                            });
 
 
-                        if(issues.Count > 0)
-                        {
-                            Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
-                            saveConfig();
+                            if (issues.Count > 0)
+                            {
+                                Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
+                                saveConfig();
+                            }
+
+                            LoadedIssues = getIssues();
+
                         }
-
-                        LoadedIssues = getIssues();
-
+                    }
+                    else
+                    {
+                        result.Add(Tuple.Create<Issue, string>(null, "Error connecting to the server."));
                     }
                 }
                 else
                 {
-                    result.Add(Tuple.Create<Issue, string>(null, "Error connecting to the server."));
+                    result.Add(Tuple.Create<Issue, string>(null, "Server error: " + response.StatusDescription));
                 }
 
             }

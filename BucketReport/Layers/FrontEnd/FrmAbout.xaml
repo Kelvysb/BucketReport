@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BucketReport.Layers.FrontEnd"
         mc:Ignorable="d"
-        Title="About - version: 1.0.0.1 - beta" Height="260.911" Width="362.818" Background="{StaticResource BackColor}" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Icon="/BucketReport;component/Resources/icon.ico">
+        Title="About - version: 1.0.0.2 - beta" Height="260.911" Width="362.818" Background="{StaticResource BackColor}" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Icon="/BucketReport;component/Resources/icon.ico">
     <Grid Name="grdPrincipal">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
