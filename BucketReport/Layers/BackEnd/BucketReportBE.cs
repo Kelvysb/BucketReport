@@ -261,6 +261,7 @@ namespace BucketReport.Layers.BackEnd
             IRestResponse response;
             RestClient client;
             RestRequest request;
+            List<Issue> allIssues = new List<Issue>();
 
             try
             {
@@ -334,10 +335,13 @@ namespace BucketReport.Layers.BackEnd
                                 } while (bucketResponse.next != null);
                             }
 
+
+                            allIssues = getIssues();
+
                             issues.ForEach(issue =>
                             {
 
-                                oldIssue = LoadedIssues.Find(iss => iss.id == issue.id);
+                                oldIssue = allIssues.Find(iss => iss.id == issue.id);
 
                                 if (oldIssue == null)
                                 {
@@ -360,8 +364,6 @@ namespace BucketReport.Layers.BackEnd
                                 Configuration.LastUpdate = issues.Max(issue => issue.updated_on);
                                 saveConfig();
                             }
-
-                            LoadedIssues = getIssues();
 
                         }
                     }

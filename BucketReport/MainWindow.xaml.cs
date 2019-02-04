@@ -499,7 +499,7 @@ namespace BucketReport
 
                 Dispatcher.Invoke(() => {
                     addLog(logs);
-                    loadIssues();
+                    filter();
                 });
 
             }
@@ -565,7 +565,7 @@ namespace BucketReport
 
                             Dispatcher.Invoke(() => {
                                 addLog(logs);
-                                loadIssues();
+                                filter();
                             });
                         }
                     }

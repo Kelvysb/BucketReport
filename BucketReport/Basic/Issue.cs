@@ -552,10 +552,10 @@ namespace BucketReport.Basic
                 + type + ";"
                 + priority + ";"
                 + state + ";"
-                + (component.Equals("") ? "None" : assignee) + ";"
-                + (milestone.Equals("") ? "None" : assignee) + ";"
-                + (version.Equals("") ? "None" : assignee) + ";"
-                + (reporter.Equals("") ? "None" : assignee) + ";"
+                + (component.Equals("") ? "None" : component) + ";"
+                + (milestone.Equals("") ? "None" : milestone) + ";"
+                + (version.Equals("") ? "None" : version ) + ";"
+                + (reporter.Equals("") ? "None" : reporter) + ";"
                 + created_on.ToString("yyyy-MM-dd HH:mm:ss") + ";"
                 + (updated_on != null?updated_on.ToString("yyyy-MM-dd HH:mm:ss"):"None");
         }

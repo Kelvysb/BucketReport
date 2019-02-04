@@ -38,6 +38,8 @@ namespace BucketReport.Layers.FrontEnd
         private List<view> byKind;
         private List<view> byComponent;
         private List<view> byPriority;
+        private List<view> byMilestone;
+        private List<view> byVersion;
         private List<RawIssue> issues;
         #endregion
 
@@ -169,7 +171,21 @@ namespace BucketReport.Layers.FrontEnd
                               select new view(result.Key.Equals("") ? "None" : result.Key, result.Count())).ToList();
                 dtgPriority.ItemsSource = null;
                 dtgPriority.ItemsSource = byPriority;
-                
+
+                byMilestone = new List<view>();
+                byMilestone = (from RawIssue issue in issues
+                              group issue by issue.milestone into result
+                              select new view(result.Key.Equals("") ? "None" : result.Key, result.Count())).ToList();
+                dtgMilestone.ItemsSource = null;
+                dtgMilestone.ItemsSource = byMilestone;
+
+                byVersion = new List<view>();
+                byVersion = (from RawIssue issue in issues
+                               group issue by issue.version  into result
+                               select new view(result.Key.Equals("") ? "None" : result.Key, result.Count())).ToList();
+                dtgVersion.ItemsSource = null;
+                dtgVersion.ItemsSource = byVersion;
+
             }
             catch (Exception ex)
             {
@@ -207,6 +223,18 @@ namespace BucketReport.Layers.FrontEnd
                 line += "-----------------------\r\n";
                 line += "Priority".PadRight(20, ' ') + "Count\r\n";
                 byPriority.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
+                line += "-----------------------\r\n\r\n";
+
+                line += "By Milestone\r\n";
+                line += "-----------------------\r\n";
+                line += "Milestone".PadRight(20, ' ') + "Count\r\n";
+                byMilestone.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
+                line += "-----------------------\r\n\r\n";
+
+                line += "By Version\r\n";
+                line += "-----------------------\r\n";
+                line += "Version".PadRight(20, ' ') + "Count\r\n";
+                byVersion.ForEach(item => line += item.key.PadRight(20, ' ') + item.value + "\r\n");
                 line += "-----------------------\r\n\r\n";
 
                 return line;
